@@ -28,7 +28,7 @@ export default class ExceptionHandler extends HttpExceptionHandler {
       return ctx.response.unauthorized({
         meta: {
           status: 401,
-          message: 'Please login first',
+          message: 'Unauthorized access please login',
         },
       })
     }
@@ -38,15 +38,6 @@ export default class ExceptionHandler extends HttpExceptionHandler {
         meta: {
           status: 404,
           message: 'User not found',
-        },
-      })
-    }
-
-    if (error.code === 'E_INVALID_AUTH_PASSWORD') {
-      return ctx.response.badRequest({
-        meta: {
-          status: 400,
-          message: 'Invalid password',
         },
       })
     }
