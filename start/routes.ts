@@ -39,4 +39,15 @@ Route.group(() => {
 
   // Avatar
   Route.post('/users/me/avatar', 'AvatarsController.store').middleware('avatarChecker')
+
+  // Friends
+  Route.get('/friends', 'FriendsController.index')
+  Route.post('/friends/:id', 'FriendsController.store').middleware([
+    'friendRequestChecker',
+    'friendSentChecker',
+  ])
+  Route.post('/friends/:id/accept', 'FriendsController.accept')
+  Route.post('/friends/:id/reject', 'FriendsController.reject')
+  Route.post('/friends/:id/cancel', 'FriendsController.cancel')
+  Route.delete('/friends/:id', 'FriendsController.destroy')
 }).middleware('auth')

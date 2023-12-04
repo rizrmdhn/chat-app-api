@@ -3,6 +3,7 @@ import { schema, rules } from '@ioc:Adonis/Core/Validator'
 import User from 'App/Models/User'
 import Env from '@ioc:Adonis/Core/Env'
 import * as nanoid from 'nanoid'
+import Database from '@ioc:Adonis/Lucid/Database'
 
 export default class UsersController {
   public async index({ auth, response }: HttpContextContract) {
@@ -116,9 +117,10 @@ export default class UsersController {
       })
     }
 
-    const user = await User.query()
-      .select(['id', 'name', 'username', 'email', 'status', 'aboutMe', 'avatar'])
+    const user = await Database.query()
+      .select(['id', 'name', 'username', 'email', 'status', 'about_me', 'avatar'])
       .where('id', userId)
+      .from('users')
       .first()
 
     if (!user) {

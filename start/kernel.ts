@@ -41,4 +41,6 @@ Server.middleware.register([() => import('@ioc:Adonis/Core/BodyParser')])
 Server.middleware.registerNamed({
   auth: () => import('App/Middleware/Auth'),
   avatarChecker: () => import('App/Middleware/AvatarChecker'),
+  friendRequestChecker: () => import('App/Middleware/FriendRequestChecker'),
+  friendSentChecker: () => import('App/Middleware/FriendSentChecker'),
 })

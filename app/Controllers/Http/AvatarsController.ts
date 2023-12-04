@@ -2,6 +2,7 @@ import Application from '@ioc:Adonis/Core/Application'
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import { schema } from '@ioc:Adonis/Core/Validator'
 import User from 'App/Models/User'
+import Env from '@ioc:Adonis/Core/Env'
 
 export default class AvatarsController {
   public async store({ request, response, auth }: HttpContextContract) {
@@ -68,7 +69,7 @@ export default class AvatarsController {
         name: user.name,
         username: user.username,
         email: user.email,
-        avatar: user.avatar,
+        avatar: `${Env.get('APP_URL')}/uploads/${user.avatar}`,
         aboutMe: user.aboutMe,
         status: user.status,
       },

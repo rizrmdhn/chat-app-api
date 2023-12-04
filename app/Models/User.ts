@@ -1,6 +1,15 @@
 import { DateTime } from 'luxon'
 import Hash from '@ioc:Adonis/Core/Hash'
-import { BaseModel, beforeSave, column } from '@ioc:Adonis/Lucid/Orm'
+import {
+  BaseModel,
+  HasMany,
+  ManyToMany,
+  beforeSave,
+  column,
+  hasMany,
+  manyToMany,
+} from '@ioc:Adonis/Lucid/Orm'
+import FriendRequest from './FriendRequest'
 
 export default class User extends BaseModel {
   @column({ isPrimary: true })
@@ -32,6 +41,25 @@ export default class User extends BaseModel {
 
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   public updatedAt: DateTime
+
+  @manyToMany(() => User, {
+    pivotTable: 'friends',
+    pivotForeignKey: 'user_id',
+    localKey: 'id',
+    pivotRelatedForeignKey: 'friend_id',
+    pivotColumns: ['id'],
+  })
+  public friends: ManyToMany<typeof User>
+
+  @hasMany(() => FriendRequest, {
+    foreignKey: 'receiver_id',
+  })
+  public friendRequests: HasMany<typeof FriendRequest>
+
+  @hasMany(() => FriendRequest, {
+    foreignKey: 'sender_id',
+  })
+  public sentRequest: HasMany<typeof FriendRequest>
 
   @beforeSave()
   public static async hashPassword(user: User) {
