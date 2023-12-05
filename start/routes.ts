@@ -69,4 +69,13 @@ Route.group(() => {
   Route.delete('/message-friends/:id/:messageId/soft-delete', 'MessageFriendsController.softDelete')
   Route.post('/message-friends/:id/:messageId/restore', 'MessageFriendsController.restore')
   Route.delete('/message-friends/:id/:messageId', 'MessageFriendsController.destroy')
+
+  // message groups
+  Route.post('/message-groups/:id', 'MessageGroupsController.store').middleware([
+    'groupMessageChecker',
+  ])
+  Route.put('/message-groups/:id/:messageId', 'MessageGroupsController.update')
+  Route.delete('/message-groups/:id/:messageId/soft-delete', 'MessageGroupsController.softDelete')
+  Route.post('/message-groups/:id/:messageId/restore', 'MessageGroupsController.restore')
+  Route.delete('/message-groups/:id/:messageId', 'MessageGroupsController.destroy')
 }).middleware('auth')

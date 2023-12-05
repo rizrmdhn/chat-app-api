@@ -10,11 +10,7 @@ export default class MessageFriendsController {
     const friendId = params.id
 
     const contentSchema = schema.create({
-      content: schema.string({ trim: true }, [
-        rules.maxLength(1000),
-        rules.minLength(1),
-        rules.required(),
-      ]),
+      content: schema.string([rules.maxLength(1000), rules.minLength(1), rules.required()]),
     })
 
     const contentCustomMessages = {
@@ -105,6 +101,7 @@ export default class MessageFriendsController {
     }
 
     message.message = content
+    message.isEdited = true
 
     await message.save()
 

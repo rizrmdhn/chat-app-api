@@ -260,10 +260,19 @@ export default class GroupsController {
         data: groupMember,
       })
     } catch (error) {
-      return response.notFound({
+      if (error.code === 'E_ROW_NOT_FOUND') {
+        return response.notFound({
+          meta: {
+            status: 404,
+            message: 'Group not found',
+          },
+        })
+      }
+
+      return response.internalServerError({
         meta: {
-          status: 404,
-          message: error.message,
+          status: 500,
+          message: 'Internal server error',
         },
       })
     }
