@@ -116,6 +116,7 @@ export default class FriendsController {
       },
     })
   }
+
   public async store({ auth, params, response }: HttpContextContract) {
     if (!params.id) {
       return response.badRequest({

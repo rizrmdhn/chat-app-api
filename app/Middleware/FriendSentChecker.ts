@@ -1,19 +1,18 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+import ResponseHelpers from 'App/Helpers/ResponseHelpers'
 import Friend from 'App/Models/Friend'
 import FriendRequest from 'App/Models/FriendRequest'
 
 export default class FriendSentChecker {
   public async handle({ auth, params, response }: HttpContextContract, next: () => Promise<void>) {
     // code for middleware goes here. ABOVE THE NEXT CALL
+    const responseHelpers = new ResponseHelpers()
     const userId = auth.use('api').user!.id
 
     if (userId === params.id) {
-      return response.badRequest({
-        meta: {
-          status: 400,
-          message: 'You cannot send friend request to yourself',
-        },
-      })
+      return response.badRequest(
+        responseHelpers.badRequestResponse('You cannot send friend request to yourself')
+      )
     }
 
     const friendRequest = await FriendRequest.query()
@@ -22,12 +21,9 @@ export default class FriendSentChecker {
       .first()
 
     if (friendRequest) {
-      return response.badRequest({
-        meta: {
-          status: 400,
-          message: 'You have already sent friend request to this user',
-        },
-      })
+      return response.badRequest(
+        responseHelpers.badRequestResponse('You have already sent a friend request to this user')
+      )
     }
 
     const isInFriendList = await Friend.query()
@@ -38,12 +34,9 @@ export default class FriendSentChecker {
       .first()
 
     if (isInFriendList) {
-      return response.badRequest({
-        meta: {
-          status: 400,
-          message: 'You are already friend with this user',
-        },
-      })
+      return response.badRequest(
+        responseHelpers.badRequestResponse('You are already friends with this user')
+      )
     }
 
     await next()

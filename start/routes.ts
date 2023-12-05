@@ -60,4 +60,6 @@ Route.group(() => {
   Route.post('/groups/:id/leave', 'GroupsController.leave').middleware('groupChecker')
   Route.post('/group-link/:link/join', 'GroupsController.joinByLink').middleware('groupJoinChecker')
   Route.delete('/groups/:id', 'GroupsController.destroy').middleware(['groupAdminChecker'])
+
+  // message friends
 }).middleware('auth')
