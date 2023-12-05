@@ -62,4 +62,7 @@ Route.group(() => {
   Route.delete('/groups/:id', 'GroupsController.destroy').middleware(['groupAdminChecker'])
 
   // message friends
+  Route.post('/message-friends/:id', 'MessageFriendsController.store').middleware([
+    'messageChecker',
+  ])
 }).middleware('auth')

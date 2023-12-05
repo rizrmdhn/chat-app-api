@@ -18,6 +18,15 @@ export default class ResponseHelpers {
     }
   }
 
+  public forbiddenResponse(message: string) {
+    return {
+      meta: {
+        status: 403,
+        message: message,
+      },
+    }
+  }
+
   public successResponse(data: any) {
     return {
       meta: {

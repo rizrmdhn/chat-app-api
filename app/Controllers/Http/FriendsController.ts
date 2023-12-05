@@ -282,11 +282,11 @@ export default class FriendsController {
 
     const userId = auth.use('api').user!.id
 
-    const friend = await Friend.query()
+    const friend = await Database.from('friends')
       .where('user_id', userId)
-      .where('friend_id', params.id)
+      .andWhere('friend_id', params.id)
       .orWhere('user_id', params.id)
-      .where('friend_id', userId)
+      .andWhere('friend_id', userId)
       .first()
 
     if (!friend) {
@@ -298,7 +298,12 @@ export default class FriendsController {
       })
     }
 
-    await Friend.query().where('user_id', userId).where('friend_id', params.id).delete()
+    await Database.from('friends')
+      .where('user_id', userId)
+      .andWhere('friend_id', params.id)
+      .orWhere('user_id', params.id)
+      .andWhere('friend_id', userId)
+      .delete()
 
     return response.ok({
       meta: {

@@ -43,9 +43,11 @@ Server.middleware.registerNamed({
   avatarChecker: () => import('App/Middleware/AvatarChecker'),
   friendRequestChecker: () => import('App/Middleware/FriendRequestChecker'),
   friendSentChecker: () => import('App/Middleware/FriendSentChecker'),
+  friendChecker: () => import('App/Middleware/FriendChecker'),
   groupChecker: () => import('App/Middleware/GroupChecker'),
   groupRoleChecker: () => import('App/Middleware/GroupRoleChecker'),
   groupPrivateChecker: () => import('App/Middleware/GroupPrivateChecker'),
   groupJoinChecker: () => import('App/Middleware/GroupJoinChecker'),
   groupAdminChecker: () => import('App/Middleware/GroupAdminChecker'),
+  messageChecker: () => import('App/Middleware/MessageChecker'),
 })
