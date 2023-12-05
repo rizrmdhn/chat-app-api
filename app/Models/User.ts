@@ -3,13 +3,17 @@ import Hash from '@ioc:Adonis/Core/Hash'
 import {
   BaseModel,
   HasMany,
+  HasOne,
   ManyToMany,
   beforeSave,
   column,
   hasMany,
+  hasOne,
   manyToMany,
 } from '@ioc:Adonis/Lucid/Orm'
 import FriendRequest from './FriendRequest'
+import GroupMember from './GroupMember'
+import GroupRole from './GroupRole'
 
 export default class User extends BaseModel {
   @column({ isPrimary: true })
@@ -60,6 +64,16 @@ export default class User extends BaseModel {
     foreignKey: 'sender_id',
   })
   public sentRequest: HasMany<typeof FriendRequest>
+
+  @hasMany(() => GroupMember, {
+    foreignKey: 'member_id',
+  })
+  public groupList: HasMany<typeof GroupMember>
+
+  @hasOne(() => GroupRole, {
+    foreignKey: 'member_id',
+  })
+  public groupRole: HasOne<typeof GroupRole>
 
   @beforeSave()
   public static async hashPassword(user: User) {

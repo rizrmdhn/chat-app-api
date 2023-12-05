@@ -50,4 +50,16 @@ Route.group(() => {
   Route.post('/friends/:id/reject', 'FriendsController.reject')
   Route.post('/friends/:id/cancel', 'FriendsController.cancel')
   Route.delete('/friends/:id', 'FriendsController.destroy')
+
+  // Groups
+  Route.get('/groups', 'GroupsController.index')
+  Route.post('/groups', 'GroupsController.store')
+  Route.get('/groups/:id', 'GroupsController.show')
+  Route.put('/groups/:id', 'GroupsController.update').middleware([
+    'groupChecker',
+    'groupRoleChecker',
+  ])
+  Route.post('/groups/:id/leave', 'GroupsController.leave').middleware('groupChecker')
+  Route.post('/group-link/:link/join', 'GroupsController.joinByLink').middleware('groupJoinChecker')
+  Route.delete('/groups/:id', 'GroupsController.destroy').middleware(['groupAdminChecker'])
 }).middleware('auth')

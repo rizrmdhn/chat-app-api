@@ -1,40 +1,39 @@
 import { DateTime } from 'luxon'
 import { BaseModel, HasOne, column, hasOne } from '@ioc:Adonis/Lucid/Orm'
+import Role from './Role'
+import Group from './Group'
 import User from './User'
 
-export default class Message extends BaseModel {
+export default class GroupRole extends BaseModel {
   @column({ isPrimary: true })
   public id: string
 
   @column()
-  public senderId: string
+  public groupId: string
 
   @column()
-  public receiverId: string
+  public roleId: string
 
   @column()
-  public message: string
+  public memberId: string
 
-  @column()
-  public isRead: boolean
+  @hasOne(() => Group, {
+    foreignKey: 'id',
+    localKey: 'groupId',
+  })
+  public group: HasOne<typeof Group>
 
-  @column()
-  public isEdited: boolean
-
-  @column()
-  public isDeleted: boolean
+  @hasOne(() => Role, {
+    foreignKey: 'id',
+    localKey: 'roleId',
+  })
+  public role: HasOne<typeof Role>
 
   @hasOne(() => User, {
     foreignKey: 'id',
-    localKey: 'senderId',
+    localKey: 'memberId',
   })
-  public sender: HasOne<typeof User>
-
-  @hasOne(() => User, {
-    foreignKey: 'id',
-    localKey: 'receiverId',
-  })
-  public receiver: HasOne<typeof User>
+  public member: HasOne<typeof User>
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime
