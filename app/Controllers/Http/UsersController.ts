@@ -76,8 +76,9 @@ export default class UsersController {
       return response.badRequest({
         meta: {
           status: 400,
-          message: error.messages,
+          message: 'Validation error',
         },
+        data: error.messages,
       })
     }
 
@@ -168,8 +169,9 @@ export default class UsersController {
       return response.badRequest({
         meta: {
           status: 400,
-          message: error.messages,
+          message: 'Validation error',
         },
+        data: error.messages,
       })
     }
 
@@ -227,8 +229,9 @@ export default class UsersController {
       return response.badRequest({
         meta: {
           status: 400,
-          message: error.messages,
+          message: 'Validation error',
         },
+        data: error.messages,
       })
     }
 
@@ -286,8 +289,9 @@ export default class UsersController {
       return response.badRequest({
         meta: {
           status: 400,
-          message: error.messages,
+          message: 'Validation error',
         },
+        data: error.messages,
       })
     }
 

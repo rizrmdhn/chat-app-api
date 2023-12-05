@@ -6,7 +6,10 @@
     "dev": "node ace serve --watch",
     "build": "node ace build --production",
     "start": "node server.js",
+    "migrate:test": "node ace migration:run --connection=test",
+    "test:watch": "c8 node ace test --watch",
     "test": "node ace test",
+    "coverage": "c8 node ace test && c8 report --reporter=html",
     "lint": "eslint . --ext=.ts",
     "format": "prettier --write ."
   },
@@ -47,6 +50,7 @@
     "@types/proxy-addr": "^2.0.3",
     "@types/source-map-support": "^0.5.10",
     "adonis-preset-ts": "^2.1.0",
+    "c8": "^8.0.1",
     "eslint": "^8.54.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-adonis": "^2.1.1",

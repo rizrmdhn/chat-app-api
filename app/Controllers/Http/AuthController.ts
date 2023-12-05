@@ -31,8 +31,9 @@ export default class AuthController {
       return response.badRequest({
         meta: {
           status: 400,
-          message: error.messages,
+          message: 'Validation error',
         },
+        data: error.messages,
       })
     }
 
