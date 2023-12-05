@@ -65,4 +65,8 @@ Route.group(() => {
   Route.post('/message-friends/:id', 'MessageFriendsController.store').middleware([
     'messageChecker',
   ])
+  Route.put('/message-friends/:id/:messageId', 'MessageFriendsController.update')
+  Route.delete('/message-friends/:id/:messageId/soft-delete', 'MessageFriendsController.softDelete')
+  Route.post('/message-friends/:id/:messageId/restore', 'MessageFriendsController.restore')
+  Route.delete('/message-friends/:id/:messageId', 'MessageFriendsController.destroy')
 }).middleware('auth')

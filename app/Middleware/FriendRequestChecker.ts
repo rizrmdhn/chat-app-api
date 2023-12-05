@@ -21,7 +21,9 @@ export default class FriendRequestChecker {
 
     if (friendRequest) {
       return response.badRequest(
-        responseHelpers.badRequestResponse('You have already sent a friend request to this user')
+        responseHelpers.badRequestResponse(
+          'You have already sent a friend request to this user or this user has sent a friend request to you'
+        )
       )
     }
 
