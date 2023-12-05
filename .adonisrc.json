@@ -13,31 +13,37 @@
     "Database": "database",
     "Contracts": "contracts"
   },
-  "preloads": [
-    "./start/routes",
-    "./start/kernel"
-  ],
-  "providers": [
-    "./providers/AppProvider",
-    "@adonisjs/core",
-    "@adonisjs/lucid",
-    "@adonisjs/auth"
-  ],
-  "aceProviders": [
-    "@adonisjs/repl"
-  ],
+  "preloads": ["./start/routes", "./start/kernel"],
+  "providers": ["./providers/AppProvider", "@adonisjs/core", "@adonisjs/lucid", "@adonisjs/auth"],
+  "aceProviders": ["@adonisjs/repl"],
   "tests": {
     "suites": [
       {
         "name": "functional",
-        "files": [
-          "tests/functional/**/*.spec(.ts|.js)"
-        ],
+        "files": ["tests/functional/**/*.spec(.ts|.js)"],
+        "timeout": 60000
+      },
+      {
+        "name": "Auth",
+        "files": ["tests/functional/auth/**/*.spec(.ts|.js)"],
+        "timeout": 60000
+      },
+      {
+        "name": "Users",
+        "files": ["tests/functional/users/**/*.spec(.ts|.js)"],
+        "timeout": 60000
+      },
+      {
+        "name": "Friends",
+        "files": ["tests/functional/friends/**/*.spec(.ts|.js)"],
+        "timeout": 60000
+      },
+      {
+        "name": "Groups",
+        "files": ["tests/functional/groups/**/*.spec(.ts|.js)"],
         "timeout": 60000
       }
     ]
   },
-  "testProviders": [
-    "@japa/preset-adonis/TestsProvider"
-  ]
+  "testProviders": ["@japa/preset-adonis/TestsProvider"]
 }
