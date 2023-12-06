@@ -8,28 +8,54 @@ export default class MessageFriendsController {
     const userId = auth.use('api').user!.id
     const friendId = params.id
 
-    const messages = await Message.query()
-      .where('sender_id', userId)
-      .where('receiver_id', friendId)
-      .orWhere('sender_id', friendId)
-      .where('receiver_id', userId)
-      .where('is_deleted', false)
-      .orderBy('created_at', 'asc')
+    try {
+      const messages = await Message.query()
+        .where('sender_id', userId)
+        .where('receiver_id', friendId)
+        .orWhere('sender_id', friendId)
+        .where('receiver_id', userId)
+        .where('is_deleted', false)
+        .orderBy('created_at', 'asc')
+        .firstOrFail()
 
-    messages.forEach((message) => {
-      if (message.receiverId === userId) {
-        message.isRead = true
-        message.save()
+      if (!messages) {
+        return response.notFound({
+          meta: {
+            status: 404,
+            message: 'Message not found',
+          },
+        })
       }
-    })
 
-    return response.ok({
-      meta: {
-        status: 200,
-        message: 'Success',
-      },
-      data: messages,
-    })
+      if (messages.senderId !== userId) {
+        messages.isRead = true
+        await messages.save()
+      }
+
+      return response.ok({
+        meta: {
+          status: 200,
+          message: 'Success',
+        },
+        data: messages,
+      })
+    } catch (error) {
+      if (error.code === 'E_ROW_NOT_FOUND') {
+        return response.notFound({
+          meta: {
+            status: 404,
+            message: 'Message not found',
+          },
+        })
+      }
+
+      return response.internalServerError({
+        meta: {
+          status: 500,
+          message: 'Internal server error',
+        },
+      })
+    }
   }
 
   public async store({ auth, params, request, response }: HttpContextContract) {

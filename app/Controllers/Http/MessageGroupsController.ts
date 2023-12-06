@@ -8,16 +8,35 @@ export default class MessageGroupsController {
   public async index({ auth, params, response }: HttpContextContract) {
     const userId = auth.use('api').user!.id
     const groupId = params.id
+    let groupUsersCount: any
+    let memberList: any
 
-    // get group users count
-    const groupUsersCount = await Group.query()
-      .where('id', groupId)
-      .preload('groupMembers')
-      .firstOrFail()
+    try {
+      groupUsersCount = await Group.query()
+        .where('id', groupId)
+        .preload('groupMembers')
+        .firstOrFail()
 
-    const memberList = groupUsersCount.groupMembers.filter((member) => {
-      return member.memberId !== userId
-    })
+      memberList = groupUsersCount.groupMembers.filter((member) => {
+        return member.memberId !== userId
+      })
+    } catch (error) {
+      if (error.code === 'E_ROW_NOT_FOUND') {
+        return response.notFound({
+          meta: {
+            status: 404,
+            message: 'Group not found',
+          },
+        })
+      }
+
+      return response.internalServerError({
+        meta: {
+          status: 500,
+          message: 'Internal server error',
+        },
+      })
+    }
 
     const messages = await GroupMessage.query()
       .where('group_id', groupId)
@@ -29,6 +48,11 @@ export default class MessageGroupsController {
 
     messages.forEach((message) => {
       if (message.senderId !== userId) {
+        if (message.readBy === null) {
+          message.readBy = {
+            [userId]: true,
+          }
+        }
         if (!message.readBy[userId]) {
           message.readBy[userId] = true
         }
