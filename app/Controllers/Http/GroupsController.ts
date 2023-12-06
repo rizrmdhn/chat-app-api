@@ -10,21 +10,30 @@ export default class GroupsController {
   public async index({ auth, response }: HttpContextContract) {
     const userId = auth.use('api').user!.id
 
-    const groups = await Database.from('group_members')
-      .join('groups', 'group_members.group_id', '=', 'groups.id')
-      .join('users', 'group_members.member_id', '=', 'users.id')
-      .select(['groups.id', 'groups.name', 'groups.description', 'groups.group_image'])
-      .where('group_members.member_id', userId)
-      .returning('*')
-      .then((result) => {
-        return result.map((group) => {
-          if (group.group_image) {
-            group.group_image = `${Env.get('APP_URL')}/uploads/${group.group_image}`
-          }
-
-          return group
-        })
+    const countGroups = await Group.query()
+      .whereHas('groupMembers', (query) => {
+        query.where('member_id', userId)
       })
+      .count('* as total')
+
+    const { total } = countGroups[0].$extras
+
+    const groups = await Group.query()
+      .whereHas('groupMembers', (query) => {
+        query.where('member_id', userId)
+      })
+      .preload('groupMessages', (query) => {
+        query
+          .select(['message', 'group_id', 'sender_id'])
+          .where('is_deleted', false)
+          .orderBy('created_at', 'desc')
+          .limit(total)
+          .preload('sender', (query) => {
+            query.select(['id', 'name', 'username', 'status', 'about_me', 'avatar'])
+          })
+      })
+      .select(['id', 'name', 'description', 'group_image', 'is_private'])
+      .orderBy('updated_at', 'desc')
 
     return response.ok({
       meta: {

@@ -89,7 +89,7 @@ export default class User extends BaseModel {
   public static async afterFetchHook(users: User[]) {
     users.forEach((user) => {
       if (user.avatar) {
-        user.avatar = `${Env.get('APP_URL')}/uploads/${user.avatar}`
+        user.avatar = `${Env.get('APP_URL')}/uploads/user-avatar/${user.avatar}`
       }
     })
   }
@@ -97,7 +97,7 @@ export default class User extends BaseModel {
   @afterFind()
   public static async afterFindHook(user: User) {
     if (user.avatar) {
-      user.avatar = `${Env.get('APP_URL')}/uploads/${user.avatar}`
+      user.avatar = `${Env.get('APP_URL')}/uploads/user-avatar/${user.avatar}`
     }
   }
 }

@@ -35,8 +35,12 @@ Route.group(() => {
   Route.put('/users/me/about-me', 'UsersController.updateAboutMe')
   Route.put('/users/me/status', 'UsersController.updateStatus')
 
-  // Avatar
+  // Avatar and Group Image
   Route.post('/users/me/avatar', 'AvatarsController.store').middleware('avatarChecker')
+  Route.post('/groups/:id/group-image', 'GroupImagesController.store').middleware([
+    'groupRoleChecker',
+    'groupImageChecker',
+  ])
 
   // Friends
   Route.get('/friends', 'FriendsController.index')

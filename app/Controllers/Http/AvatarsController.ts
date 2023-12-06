@@ -49,7 +49,7 @@ export default class AvatarsController {
 
     const avatarName = `${new Date().getTime()}-${userId}.${avatar?.extname}`
 
-    await avatar?.move(Application.tmpPath('uploads'), {
+    await avatar?.move(Application.tmpPath('uploads/user-avatar'), {
       name: avatarName,
     })
 
@@ -69,7 +69,7 @@ export default class AvatarsController {
         name: user.name,
         username: user.username,
         email: user.email,
-        avatar: `${Env.get('APP_URL')}/uploads/${user.avatar}`,
+        avatar: `${Env.get('APP_URL')}/uploads/user-avatar/${user.avatar}`,
         aboutMe: user.aboutMe,
         status: user.status,
       },

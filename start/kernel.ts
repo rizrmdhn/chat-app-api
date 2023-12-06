@@ -51,4 +51,5 @@ Server.middleware.registerNamed({
   groupAdminChecker: () => import('App/Middleware/GroupAdminChecker'),
   messageChecker: () => import('App/Middleware/MessageChecker'),
   groupMessageChecker: () => import('App/Middleware/GroupMessageChecker'),
+  groupImageChecker: () => import('App/Middleware/GroupImageChecker'),
 })

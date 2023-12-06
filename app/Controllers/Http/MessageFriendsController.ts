@@ -9,14 +9,20 @@ export default class MessageFriendsController {
     const friendId = params.id
 
     try {
+      // list of all messages
       const messages = await Message.query()
         .where('sender_id', userId)
         .where('receiver_id', friendId)
         .orWhere('sender_id', friendId)
         .where('receiver_id', userId)
         .where('is_deleted', false)
+        .preload('sender', (query) => {
+          query.select(['id', 'name', 'username', 'status', 'about_me', 'avatar'])
+        })
+        .preload('receiver', (query) => {
+          query.select(['id', 'name', 'username', 'status', 'about_me', 'avatar'])
+        })
         .orderBy('created_at', 'asc')
-        .firstOrFail()
 
       if (!messages) {
         return response.notFound({
@@ -27,10 +33,12 @@ export default class MessageFriendsController {
         })
       }
 
-      if (messages.senderId !== userId) {
-        messages.isRead = true
-        await messages.save()
-      }
+      messages.forEach((message) => {
+        if (message.senderId !== userId) {
+          message.isRead = true
+        }
+        message.save()
+      })
 
       return response.ok({
         meta: {
