@@ -1,13 +1,5 @@
 import { DateTime } from 'luxon'
-import {
-  BaseModel,
-  HasOne,
-  afterFetch,
-  afterFind,
-  beforeSave,
-  column,
-  hasOne,
-} from '@ioc:Adonis/Lucid/Orm'
+import { BaseModel, HasOne, afterFetch, afterFind, column, hasOne } from '@ioc:Adonis/Lucid/Orm'
 import User from './User'
 import Group from './Group'
 
@@ -22,7 +14,7 @@ export default class GroupMessage extends BaseModel {
   public senderId: string
 
   @column()
-  public readBy: string
+  public readBy: object
 
   @column()
   public message: string
@@ -54,24 +46,19 @@ export default class GroupMessage extends BaseModel {
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   public updatedAt: DateTime
 
-  @beforeSave()
-  public static async setReadBy(message: GroupMessage) {
-    if (message.$dirty.readBy) {
-      message.readBy = JSON.stringify(message.readBy)
-    }
-  }
-
   @afterFetch()
-  public static async getReadBy(message: GroupMessage) {
-    if (message.readBy) {
-      message.readBy = JSON.parse(message.readBy)
-    }
+  public static async afterFetchHook(messages: GroupMessage[]) {
+    messages.forEach((message) => {
+      if (message.$dirty.readBy) {
+        message.readBy = JSON.parse(message.readBy.toString())
+      }
+    })
   }
 
   @afterFind()
-  public static async getReadBys(message: GroupMessage) {
-    if (message.readBy) {
-      message.readBy = JSON.parse(message.readBy)
+  public static async afterFindHook(message: GroupMessage) {
+    if (message.$dirty.readBy) {
+      message.readBy = JSON.parse(message.readBy.toString())
     }
   }
 }

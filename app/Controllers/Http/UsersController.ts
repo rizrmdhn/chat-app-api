@@ -3,7 +3,6 @@ import { schema, rules } from '@ioc:Adonis/Core/Validator'
 import User from 'App/Models/User'
 import Env from '@ioc:Adonis/Core/Env'
 import * as nanoid from 'nanoid'
-import Database from '@ioc:Adonis/Lucid/Database'
 
 export default class UsersController {
   public async index({ auth, response }: HttpContextContract) {
@@ -118,10 +117,9 @@ export default class UsersController {
       })
     }
 
-    const user = await Database.query()
-      .select(['id', 'name', 'username', 'email', 'status', 'about_me', 'avatar'])
+    const user = await User.query()
+      .select(['id', 'name', 'username', 'email', 'status', 'aboutMe', 'avatar'])
       .where('id', userId)
-      .from('users')
       .first()
 
     if (!user) {
@@ -131,10 +129,6 @@ export default class UsersController {
           message: 'User not found',
         },
       })
-    }
-
-    if (user.avatar) {
-      user.avatar = `${Env.get('APP_URL')}/uploads/${user.avatar}`
     }
 
     return response.ok({

@@ -9,9 +9,12 @@ export default class AvatarChecker {
 
     const oldAvatar = await User.query().select('avatar').where('id', userId).firstOrFail()
 
+    const avatar = oldAvatar.avatar?.split('/')[4]
+    console.log('🚀 ~ file: AvatarChecker.ts:13 ~ AvatarChecker ~ handle ~ avatar:', avatar)
+
     if (oldAvatar.avatar) {
       // Delete old avatar
-      fs.unlinkSync(`./tmp/uploads/${oldAvatar.avatar}`)
+      fs.unlinkSync(`./tmp/uploads/${avatar}`)
     }
 
     await next()

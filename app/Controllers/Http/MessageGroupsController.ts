@@ -1,9 +1,55 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import { schema, rules } from '@ioc:Adonis/Core/Validator'
+import Group from 'App/Models/Group'
 import GroupMessage from 'App/Models/GroupMessage'
 import * as nanoid from 'nanoid'
 
 export default class MessageGroupsController {
+  public async index({ auth, params, response }: HttpContextContract) {
+    const userId = auth.use('api').user!.id
+    const groupId = params.id
+
+    // get group users count
+    const groupUsersCount = await Group.query()
+      .where('id', groupId)
+      .preload('groupMembers')
+      .firstOrFail()
+
+    const memberList = groupUsersCount.groupMembers.filter((member) => {
+      return member.memberId !== userId
+    })
+
+    const messages = await GroupMessage.query()
+      .where('group_id', groupId)
+      .where('is_deleted', false)
+      .preload('sender', (query) => {
+        query.select(['id', 'name', 'username', 'avatar'])
+      })
+      .orderBy('created_at', 'asc')
+
+    messages.forEach((message) => {
+      if (message.senderId !== userId) {
+        if (!message.readBy[userId]) {
+          message.readBy[userId] = true
+        }
+
+        if (Object.keys(message.readBy).length === memberList.length) {
+          message.isRead = true
+        }
+
+        message.save()
+      }
+    })
+
+    return response.ok({
+      meta: {
+        status: 200,
+        message: 'Success',
+      },
+      data: messages,
+    })
+  }
+
   public async store({ auth, params, request, response }: HttpContextContract) {
     const { content } = request.only(['content'])
     const userId = auth.use('api').user!.id

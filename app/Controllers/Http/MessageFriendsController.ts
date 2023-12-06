@@ -4,6 +4,34 @@ import Message from 'App/Models/Message'
 import * as nanoid from 'nanoid'
 
 export default class MessageFriendsController {
+  public async index({ auth, params, response }: HttpContextContract) {
+    const userId = auth.use('api').user!.id
+    const friendId = params.id
+
+    const messages = await Message.query()
+      .where('sender_id', userId)
+      .where('receiver_id', friendId)
+      .orWhere('sender_id', friendId)
+      .where('receiver_id', userId)
+      .where('is_deleted', false)
+      .orderBy('created_at', 'asc')
+
+    messages.forEach((message) => {
+      if (message.receiverId === userId) {
+        message.isRead = true
+        message.save()
+      }
+    })
+
+    return response.ok({
+      meta: {
+        status: 200,
+        message: 'Success',
+      },
+      data: messages,
+    })
+  }
+
   public async store({ auth, params, request, response }: HttpContextContract) {
     const { content } = request.only(['content'])
     const userId = auth.use('api').user!.id

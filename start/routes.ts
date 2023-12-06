@@ -78,4 +78,10 @@ Route.group(() => {
   Route.delete('/message-groups/:id/:messageId/soft-delete', 'MessageGroupsController.softDelete')
   Route.post('/message-groups/:id/:messageId/restore', 'MessageGroupsController.restore')
   Route.delete('/message-groups/:id/:messageId', 'MessageGroupsController.destroy')
+
+  // get friends messages
+  Route.get('/message-friends/:id', 'MessageFriendsController.index')
+
+  // get groups messages
+  Route.get('/message-groups/:id', 'MessageGroupsController.index')
 }).middleware('auth')

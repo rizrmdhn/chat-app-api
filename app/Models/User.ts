@@ -5,6 +5,8 @@ import {
   HasMany,
   HasOne,
   ManyToMany,
+  afterFetch,
+  afterFind,
   beforeSave,
   column,
   hasMany,
@@ -14,6 +16,7 @@ import {
 import FriendRequest from './FriendRequest'
 import GroupMember from './GroupMember'
 import GroupRole from './GroupRole'
+import Env from '@ioc:Adonis/Core/Env'
 
 export default class User extends BaseModel {
   @column({ isPrimary: true })
@@ -79,6 +82,22 @@ export default class User extends BaseModel {
   public static async hashPassword(user: User) {
     if (user.$dirty.password) {
       user.password = await Hash.make(user.password)
+    }
+  }
+
+  @afterFetch()
+  public static async afterFetchHook(users: User[]) {
+    users.forEach((user) => {
+      if (user.avatar) {
+        user.avatar = `${Env.get('APP_URL')}/uploads/${user.avatar}`
+      }
+    })
+  }
+
+  @afterFind()
+  public static async afterFindHook(user: User) {
+    if (user.avatar) {
+      user.avatar = `${Env.get('APP_URL')}/uploads/${user.avatar}`
     }
   }
 }
