@@ -14,7 +14,7 @@ export default class GroupMessage extends BaseModel {
   public senderId: string
 
   @column()
-  public readBy: object
+  public readBy: object | null
 
   @column()
   public message: string
@@ -50,7 +50,9 @@ export default class GroupMessage extends BaseModel {
   public static async afterFetchHook(messages: GroupMessage[]) {
     messages.forEach((message) => {
       if (message.$dirty.readBy) {
-        message.readBy = JSON.parse(message.readBy.toString())
+        if (message.readBy !== null) {
+          message.readBy = JSON.parse(message.readBy.toString())
+        }
       }
     })
   }
@@ -58,7 +60,9 @@ export default class GroupMessage extends BaseModel {
   @afterFind()
   public static async afterFindHook(message: GroupMessage) {
     if (message.$dirty.readBy) {
-      message.readBy = JSON.parse(message.readBy.toString())
+      if (message.readBy !== null) {
+        message.readBy = JSON.parse(message.readBy.toString())
+      }
     }
   }
 }

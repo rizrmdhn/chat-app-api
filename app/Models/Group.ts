@@ -1,9 +1,19 @@
 import { DateTime } from 'luxon'
-import { BaseModel, HasMany, afterFetch, afterFind, column, hasMany } from '@ioc:Adonis/Lucid/Orm'
+import {
+  BaseModel,
+  HasMany,
+  HasOne,
+  afterFetch,
+  afterFind,
+  column,
+  hasMany,
+  hasOne,
+} from '@ioc:Adonis/Lucid/Orm'
 import GroupMember from './GroupMember'
 import GroupRole from './GroupRole'
 import GroupMessage from './GroupMessage'
 import Env from '@ioc:Adonis/Core/Env'
+import User from './User'
 export default class Group extends BaseModel {
   @column({ isPrimary: true })
   public id: string
@@ -28,6 +38,18 @@ export default class Group extends BaseModel {
 
   @column()
   public updatedBy: string
+
+  @hasOne(() => User, {
+    foreignKey: 'id',
+    localKey: 'createdBy',
+  })
+  public creator: HasOne<typeof User>
+
+  @hasOne(() => User, {
+    foreignKey: 'id',
+    localKey: 'updatedBy',
+  })
+  public updater: HasOne<typeof User>
 
   @hasMany(() => GroupMember, {
     foreignKey: 'groupId',

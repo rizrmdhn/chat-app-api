@@ -9,7 +9,6 @@ export default class MessageFriendsController {
     const friendId = params.id
 
     try {
-      // list of all messages
       const messages = await Message.query()
         .where('sender_id', userId)
         .where('receiver_id', friendId)
@@ -98,9 +97,12 @@ export default class MessageFriendsController {
 
     const message = await Message.create({
       id: `message-${nanoid.nanoid(16)}`,
-      receiverId: friendId,
       senderId: userId,
+      receiverId: friendId,
       message: content,
+      isRead: false,
+      isEdited: false,
+      isDeleted: false,
     })
 
     return response.created({

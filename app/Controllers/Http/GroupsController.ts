@@ -85,6 +85,7 @@ export default class GroupsController {
       id: groupId,
       name: name || '',
       description: description || '',
+      groupImage: '',
       isPrivate: isPrivate || false,
       inviteLink: `group-invite-link-${nanoid.nanoid(16)}`,
       createdBy: userId,
@@ -121,6 +122,12 @@ export default class GroupsController {
     try {
       const group = await Group.query()
         .where('id', groupId)
+        .preload('creator', (query) => {
+          query.select(['id', 'name', 'username', 'status', 'about_me', 'avatar'])
+        })
+        .preload('updater', (query) => {
+          query.select(['id', 'name', 'username', 'status', 'about_me', 'avatar'])
+        })
         .preload('groupMembers', (query) => {
           query
             .select(['member_id'])

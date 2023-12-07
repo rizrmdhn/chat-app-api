@@ -42,7 +42,7 @@ export default class MessageGroupsController {
       .where('group_id', groupId)
       .where('is_deleted', false)
       .preload('sender', (query) => {
-        query.select(['id', 'name', 'username', 'avatar'])
+        query.select(['id', 'name', 'username', 'status', 'about_me', 'avatar'])
       })
       .orderBy('created_at', 'asc')
 
@@ -108,7 +108,11 @@ export default class MessageGroupsController {
       id: `group-message-${nanoid.nanoid(16)}`,
       groupId: groupId,
       senderId: userId,
+      readBy: null,
       message: content,
+      isRead: false,
+      isEdited: false,
+      isDeleted: false,
     })
 
     return response.created({
