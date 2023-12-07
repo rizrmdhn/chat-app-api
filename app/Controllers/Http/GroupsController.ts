@@ -10,37 +10,63 @@ export default class GroupsController {
   public async index({ auth, response }: HttpContextContract) {
     const userId = auth.use('api').user!.id
 
-    const countGroups = await Group.query()
-      .whereHas('groupMembers', (query) => {
-        query.where('member_id', userId)
-      })
-      .count('* as total')
+    const groups = await Database.rawQuery(
+      `
+  SELECT g.*, gm.message, gm.created_at AS message_created_at, gm.sender_id, u.name AS sender_name, u.username AS sender_username, u.status AS sender_status, u.about_me AS sender_about_me, u.avatar AS sender_avatar
+  FROM groups g
+  LEFT JOIN (
+    SELECT gm.group_id, gm.message, gm.created_at, gm.sender_id
+    FROM group_messages gm
+    WHERE gm.id IN (
+      SELECT MAX(id)
+      FROM group_messages
+      GROUP BY group_id
+    )
+  ) gm ON g.id = gm.group_id
+  INNER JOIN users u ON gm.sender_id = u.id
+  WHERE EXISTS (
+    SELECT 1
+    FROM group_members gm
+    WHERE gm.group_id = g.id AND gm.member_id = ?
+  )
+  ORDER BY g.updated_at DESC
+`,
+      [userId]
+    )
 
-    const { total } = countGroups[0].$extras
-
-    const groups = await Group.query()
-      .whereHas('groupMembers', (query) => {
-        query.where('member_id', userId)
-      })
-      .preload('groupMessages', (query) => {
-        query
-          .select(['message', 'group_id', 'sender_id'])
-          .where('is_deleted', false)
-          .orderBy('created_at', 'desc')
-          .limit(total)
-          .preload('sender', (query) => {
-            query.select(['id', 'name', 'username', 'status', 'about_me', 'avatar'])
-          })
-      })
-      .select(['id', 'name', 'description', 'group_image', 'is_private'])
-      .orderBy('updated_at', 'desc')
+    const mappedGroup = groups.rows.map((group) => ({
+      id: group.id,
+      name: group.name,
+      description: group.description,
+      groupImage: group.group_image
+        ? `${Env.get('APP_URL')}/uploads/group-image/${group.group_image}`
+        : null,
+      is_private: group.is_private,
+      invite_link: group.invite_link,
+      created_by: group.created_by,
+      updated_by: group.updated_by,
+      created_at: group.created_at,
+      updated_at: group.updated_at,
+      message: group.message,
+      message_created_at: group.message_created_at,
+      sender: {
+        id: group.sender_id,
+        name: group.sender_name,
+        username: group.sender_username,
+        status: group.sender_status,
+        about_me: group.sender_about_me,
+        avatar: group.sender_avatar
+          ? `${Env.get('APP_URL')}/uploads/user-avatar/${group.sender_avatar}`
+          : null,
+      },
+    }))
 
     return response.ok({
       meta: {
         status: 200,
         message: 'Success',
       },
-      data: groups,
+      data: mappedGroup,
     })
   }
 
