@@ -17,8 +17,8 @@ export default class GroupsController {
   LEFT JOIN (
     SELECT gm.group_id, gm.message, gm.created_at, gm.sender_id
     FROM group_messages gm
-    WHERE gm.id IN (
-      SELECT MAX(id)
+    WHERE (gm.group_id, gm.created_at) IN (
+      SELECT group_id, MAX(created_at)
       FROM group_messages
       GROUP BY group_id
     )
