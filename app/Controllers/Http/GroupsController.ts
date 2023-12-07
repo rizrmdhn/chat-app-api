@@ -42,11 +42,6 @@ export default class GroupsController {
         ? `${Env.get('APP_URL')}/uploads/group-image/${group.group_image}`
         : null,
       is_private: group.is_private,
-      invite_link: group.invite_link,
-      created_by: group.created_by,
-      updated_by: group.updated_by,
-      created_at: group.created_at,
-      updated_at: group.updated_at,
       message: group.message,
       message_created_at: group.message_created_at,
       sender: {
