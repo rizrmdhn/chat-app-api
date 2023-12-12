@@ -31,24 +31,25 @@ export default class UsersController {
     const data = request.only(['name', 'username', 'email', 'password'])
 
     const registerSchema = schema.create({
-      name: schema.string({ trim: true }, [
-        rules.maxLength(100),
-        rules.minLength(3),
-        rules.required(),
-      ]),
-      username: schema.string({ trim: true }, [
+      name: schema.string([rules.maxLength(100), rules.minLength(3), rules.required()]),
+      username: schema.string([
         rules.minLength(3),
         rules.maxLength(100),
         rules.required(),
         rules.unique({ table: 'users', column: 'username' }),
+        rules.regex(/^[a-zA-Z0-9_]+$/),
       ]),
-      email: schema.string({ trim: true }, [
+      email: schema.string([
         rules.maxLength(100),
         rules.email(),
         rules.required(),
         rules.unique({ table: 'users', column: 'email' }),
       ]),
-      password: schema.string({ trim: true }, [rules.minLength(8)]),
+      password: schema.string([
+        rules.minLength(8),
+        rules.required(),
+        rules.regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/),
+      ]),
     })
 
     const registerCustomMessages = {
@@ -59,11 +60,14 @@ export default class UsersController {
       'username.minLength': 'The minimum length of username is 3 characters',
       'username.maxLength': 'The maximum length of username is 100 characters',
       'username.unique': 'Username is already taken',
+      'username.regex': 'Username must be alphanumeric',
       'email.required': 'Email is required',
       'email.email': 'Email is not valid',
       'email.maxLength': 'The maximum length of email is 100 characters',
       'email.unique': 'Email is already taken',
       'password.minLength': 'The password must be at least 8 characters',
+      'password.required': 'Password is required',
+      'password.regex': 'Password must contain at least 1 uppercase, 1 lowercase, and 1 number',
     }
 
     try {
@@ -87,6 +91,9 @@ export default class UsersController {
       username: data.username,
       email: data.email,
       password: data.password,
+      avatar: null,
+      aboutMe: null,
+      status: null,
     })
 
     return response.created({
@@ -99,9 +106,9 @@ export default class UsersController {
         name: user.name,
         username: user.username,
         email: user.email,
-        avatar: user.avatar,
-        aboutMe: user.aboutMe,
-        status: user.status,
+        avatar: user.avatar ? `${Env.get('APP_URL')}/uploads/${user.avatar}` : null,
+        aboutMe: user.aboutMe ? user.aboutMe : null,
+        status: user.status ? user.status : null,
       },
     })
   }
